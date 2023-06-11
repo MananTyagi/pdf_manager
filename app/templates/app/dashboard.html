@@ -1,0 +1,112 @@
+{% extends "app/base.html" %}
+{% block title %}PRD-dashboard{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-8">
+    <h3 style="text-align: center;">All pdf files that are uploaded by diffrent users</h3>
+
+<ul>
+    {% for pdf_file in pdf_files %}
+    <div class="card">
+
+        <div class="card-body">
+          <h5 class="card-title">{{ pdf_file.pdf_name }}</h5>
+          <a href="{% url 'pdf_file' pdf_file.id %}"class="btn btn-primary">Go to this file to view comments</a>
+        </div>
+      </div>
+    {% endfor %}
+</ul>
+</div>
+
+
+        <div class="col-4 position-relative">
+              <h3 style="text-align: center;"> Search a Pdf file by it's name</h3>
+
+
+              <form id="search-form" class="position-absolute top-40 start-40">
+                {% csrf_token %}
+
+                <input type="text" id="search-input" placeholder="Search PDF files by name">
+                <button type="submit">Search</button>
+              </form>
+
+
+              <div id="search-results-placeholder"></div>
+
+
+            </div>
+
+</div>
+{% endblock content %}
+
+
+{% block javascript %}
+
+<script>
+  console.log("entered login");
+
+
+
+  $(document).ready(function() {
+    $('#search-form').on('submit', function(event) {
+      event.preventDefault(); // Prevent the default form submission
+      var searchQuery = $('#search-input').val(); // Get the search query from the input field
+      console.log(searchQuery);
+      // Send an AJAX request to the server
+      $.ajax({
+        type: 'GET',
+        url: '{% url 'search_pdf' %}', // URL for the search view
+        data: { query: searchQuery, csrfmiddlewaretoken: '{{ csrf_token }}' }, // Pass the search query as a parameter
+        success: function(response) {
+          // Handle the successful response and update the search results placeholder
+          var resultsContainer = $('#search-results-placeholder');
+          
+          resultsContainer.empty();
+          $('#search-input').val('');
+          // Clear the existing results
+          console.log(resultsContainer, "resul");
+          console.log(response, "resul");
+          
+          if (response) {
+            // Create the HTML block for the search result
+            var pdfName = response.pdf_name;
+            var first_name = response.first_name;
+            var last_name = response.last_name;
+            var pdfFileid = response.pdf_id;
+
+            pdfFileUrl='/pdf_file/' + pdfFileid
+
+            console.log(pdfName,first_name,pdfFileUrl, "quer")
+
+
+            var html = `
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">${pdfName}</h5>
+                  <p class="card-text">Uploaded by ${first_name}  ${last_name}</p>
+                  <a href="${pdfFileUrl}" class="btn btn-primary">Go to this file to view comments</a>
+                </div>
+              </div>
+            `;
+
+            // Append the HTML block to the results container
+            resultsContainer.append(html);
+          } else {
+            // Display a message if no search result found
+            resultsContainer.html('<p>No search result found.</p>');
+          }
+        },
+        error: function(xhr, status, error) {
+          $('#search-input').val('');
+          alert('Either such pdf does not exist or you not authorized to view that file');
+          console.log(error);
+        }
+      });
+    });
+  });
+
+
+
+
+</script>
+{% endblock javascript %}

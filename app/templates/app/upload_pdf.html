@@ -1,0 +1,18 @@
+{% extends "app/base.html" %}
+{% block title %}PRD-upload pdf{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container" style="width: 50rem;">
+        <form method="POST" enctype='multipart/form-data'>
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Upload your PDF file</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Upload</button>
+            </div>
+        </form>
+
+    </div>
+{% endblock content %}

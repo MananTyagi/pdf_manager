@@ -1,0 +1,95 @@
+{% extends "app/base.html" %}
+{% block title %}PRD-Invited collaboration{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+      <div class="col-9">
+        <h3 text-align="center">Title: {{pdf_file_object.pdf_name}}</h3>
+            <embed src="{{pdf_file_object.pdf_file.url}}" type="application/pdf" width="100%" height="500px">
+      </div>
+      <div class="col-3">
+        <h4> Added Comments by you:</h4>
+          <ul id="comment-list" class="list-group list-group-flush">
+            {% for comment in comments %}
+                <li class="list-group-item">{{ comment.comment }}</li>
+            {% endfor %}
+        </ul>
+      </div>
+
+    </div>
+    <div class="row">
+      <button onclick="toggleForm()">Add comment</button>
+    </div>
+
+
+    <div class="row mx-auto">
+      <div id="comment-form-01" style="display: none;">
+        <form id="comment-form" method="post">
+              {% csrf_token %}
+
+            <div class="row">
+                        <div class="col-5">
+                          <input type="text" class="form-control" name="comment" id="comment-input" placeholder="Enter suggestions regarding this file. This will add to the comment section of this pdf which is visible publicily">
+                        </div>
+                        <div class="col-1"></div> 
+                  <div class="col-5">
+                        <button type="submit" class="btn btn-primary">Add comment</button>
+                  </div>
+            </div>   
+        </form>
+        
+      </div>
+    </div>
+
+
+    </div>
+  </div>
+{% endblock content %}
+
+
+
+{% block javascript %}
+
+<script>
+  console.log("entered login");
+
+
+  function toggleForm() {
+    var x = document.getElementById("comment-form-01");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+
+  $(document).ready(function() {
+    // Handle form submission using AJAX
+    $('#comment-form').on('submit', function(event) {
+        event.preventDefault();
+        var comment = $('#comment-input').val();
+        var id= {{pdf_file_object.id}}
+// Get the CSRF token from a form input field
+        $.ajax({
+            url: '{% url 'comment_adder' %}',  // Replace with the actual server URL
+            type: 'POST',
+            data: {  comment: comment , id:id,csrfmiddlewaretoken: '{{ csrf_token }}'}, // Include the CSRF token in the form data
+            success: function(response) {
+                console.log('comment saved successfully!');
+                var commentList = $('#comment-list');
+                var newComment = $('<li>').text(comment);
+                commentList.append(newComment);
+
+                // Clear comment input
+                $('#comment-input').val('');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+});
+
+</script>
+{% endblock javascript %}
