@@ -1,14 +1,11 @@
 from django.shortcuts import render , redirect
 from django.contrib import messages
-import magic
 from django.contrib.auth.decorators import login_required
 from .models import pdf_file_model, comment, UserInvitationRecord
 from .forms import PdfUploadForm
-from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 import base64
 from urllib.parse import urlencode
 from urllib.parse import parse_qs
@@ -45,8 +42,7 @@ def upload_pdf_file(request):
             if form.is_valid():
                 pdf_file = form.cleaned_data['pdf_file']
                 
-                file_type = magic.from_buffer(pdf_file.read(), mime=True)
-                if file_type != 'application/pdf':
+                if not pdf_file.name.endswith('.pdf'):
                     messages.error(request, "This is not a PDF file. Please upload a valid PDF file")
                     return redirect('upload')
                 form.instance.Owner = request.user
