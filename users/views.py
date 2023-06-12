@@ -115,8 +115,11 @@ def forgot_password(request):
             try:
                 email = form.cleaned_data['email']
                 user=CustomUser.objects.get(email=email)
+                print(user.username)
                 auth_token= generate_jwt_token(user.username)
+                print(auth_token)
                 user.token= str(auth_token)
+                print(user.token)
                 user.save()
                 send_mail_for_reset(email, auth_token)
                 messages.success(request, "A unique URL has been sent to given Email ID to reset password.Please dont share with anyone")

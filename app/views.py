@@ -103,7 +103,8 @@ def invite_form(request):
         id = request.POST.get('id')
              
         invited_user=CustomUser.objects.filter(email=email)
-        if invited_user is not None:
+        print(invited_user,  "http://manan.pythonanywhere.com/")
+        if invited_user.exists():
             pdf_file_object=pdf_file_model.objects.get(id=id)
             new_invite_record = UserInvitationRecord(user=invited_user.first(), pdf_file=pdf_file_object)
             new_invite_record.save()
