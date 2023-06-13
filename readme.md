@@ -37,6 +37,6 @@ procedure:
 
 2: clone the repository.
 
-3: pip install requirement.txt
+3: pip install -r requirement.txt
 
 4: python manage.py runserver
