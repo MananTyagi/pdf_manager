@@ -4,7 +4,6 @@ enables users to sign up, upload PDFs, share them with other users, and
 collaborate through comments. This PRD outlines the features, functionality, and
 specifications of the application.
 
-
 1: User Signup and Authentication:
 a. Users can create an account by providing essential information such as name,
 email address, and password etc. Users can also their passwords.
@@ -29,6 +28,8 @@ b. Invited users may not have authenticated accounts to access shared PDF files.
 a. Invited users  able to access shared pdf files through their invite link.
 b. The app provide a user-friendly interface to view the PDF files.
 c. Invited users can add comments related to the PDF file on a sidebar and can view existing comments.
+
+6: **Authors can able to change/ or reply to the existing comments by viewer and viewers can be able to see that reply on the link which is shared to them ,it is like chat based feedback**
 
 procedure:
 
