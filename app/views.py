@@ -23,6 +23,8 @@ def send_mail_for_invite( email, encoded):
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [email]
         send_mail(subject, message , email_from ,recipient_list, fail_silently=False )
+        link=f'http://127.0.0.1:8000/view_invited_pdf/{encoded}'
+        return link
     except Exception as e:
         raise smtplib.SMTPException
     
@@ -63,7 +65,6 @@ def upload_pdf_file(request):
     
     
 def dashboard(request):
-    
     if request.user.is_authenticated:
         owned_pdf_files=pdf_file_model.objects.filter(Owner=request.user)
         invited_records = UserInvitationRecord.objects.filter(user=request.user)
@@ -111,8 +112,8 @@ def invite_form(request):
         
         data = {'pdf_id': id, 'secret_key': secret_key}
         encoded_data = base64.urlsafe_b64encode(urlencode(data).encode()).decode()
-        send_mail_for_invite(email, encoded_data)
-        response_data = {'message': 'Email sent successfully!'}
+        link=send_mail_for_invite(email, encoded_data)
+        response_data = {'link': 'Email sent successfully! link is ' + link}
         return JsonResponse(response_data)
     
     response_data = {'message': 'Invalid request'}
@@ -192,5 +193,21 @@ def search_pdf(request):
     return JsonResponse({})
 
         
+@login_required
+def reply_adder(request, id):
+    if request.method == 'POST' and request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        reply_by_author =request.POST.get('reply')
+        print(id, reply_by_author)
+        comment_replied=comment.objects.get(id=id)
+        print(comment_replied)
+        comment_replied.reply=reply_by_author
+        comment_replied.save()
+        response_data ={'message':"replied sucessfully"}
+        return JsonResponse(response_data)
+    return JsonResponse({'error_message': "bad request"}, status=404)
 
+        
+        
+        
+        
     

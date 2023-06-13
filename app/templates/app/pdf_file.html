@@ -5,14 +5,55 @@
 <div class="container">
     <div class="row">
       <div class="col-9">
+        <h4>Tittle: {{pdf_file_object.pdf_name}}</h4>
             <embed src="{{pdf_file_object.pdf_file.url}}" type="application/pdf" width="100%" height="600px">
       </div>
       <div class="col-3">
-        <h4>Comments:</h4>
-        <ul class="list-group list-group-flush">
+        <h4>Comments: by viewers</h4>
+        <ul class="list-group list-group-flush ">
             {% for comment in comments %}
-                <li class="list-group-item">{{ comment.comment }}</li>
+            <div class="col">
+                <li class="list-group-item">
+                  
+                  <div class="card border-info mb-3" style="max-width: 18rem;">
+                    <div class="card-body">
+                      <h5 class="card-title">Comment-{{ comment.comment }}</h5>
+                      {% if comment.reply %}
+                      <p class="card-text" id="reply-{{comment.id}}">Replied by author-{{comment.reply}}</p>
+                      {% else %}
+                      <p class="card-text" id="reply-{{comment.id}}"></p>
+                      {% endif %}
+                    </div>
+                
+                
+                
+                
+                </li>
+
+
+
+                
+                <button class="btn btn-outline-info reply-btn btn-sm" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">Reply</button>
+
+
+
+
+
+
+                <form class="reply-form" id="form-{{comment.id}}" action="{% url 'reply_adder' comment.id %}" method="post" style="display: none;">
+                  {% csrf_token %}
+                  <div class="form-floating">
+                    <textarea class="form-control" name ="reply" id="Textarea-{{comment.id}}"></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary submit-reply">Submit Reply</button>
+                </form>
+
+
+
+              </div>
+              <br>
             {% endfor %}
+
           </ul>
       </div>
 
@@ -52,6 +93,78 @@
 {% block javascript %}
 
   <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var replyButtons = document.querySelectorAll('.reply-btn');
+      var replyForms = document.querySelectorAll('.reply-form');
+  
+      replyButtons.forEach(function(button, index) {
+        button.addEventListener('click', function() {
+          toggleFormVisibility(index);
+        });
+      });
+  
+      function toggleFormVisibility(index) {
+        replyForms.forEach(function(form, formIndex) {
+
+
+          if (formIndex === index) {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+          } else {
+            form.style.display = 'none';
+          }
+        });
+      }
+
+
+
+    });
+
+
+    // for reply
+    $('.submit-reply').click(function(event) {
+      event.preventDefault();
+      var form = $(this).closest('form');
+      var formId = form.attr('id');
+      console.log(formId);
+      var formData = new FormData(form[0]);
+      console.log(formData);
+      $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        beforeSend: function(xhr, settings) {
+          xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+          xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+        },
+        success: function(response) {
+          console.log('Reply submitted successfully!');
+          var number = parseInt(formId.split('-')[1]);
+
+          var replyId = "reply-" + number;
+          textareid="Textarea-"+number
+            console.log(replyId, "iddddddddddddd");
+            var replyelement = document.getElementById(replyId);
+            var textarea = document.getElementById(textareid);
+
+            replyelement.innerHTML ="changed reply- "+textarea.value ;
+          // Hide the form
+          textarea.value=''
+          form.hide();
+
+          // Handle the success response
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          console.error('Error:', errorThrown);
+          // Handle the error response
+        }
+      });
+    });
+
+
+
     console.log("entered login");
     var id={{pdf_file_object.id}}
     console.log(id);
@@ -78,6 +191,8 @@
               data: {  email: email , id:id, csrfmiddlewaretoken: '{{ csrf_token }}'}, // Include the CSRF token in the form data
               success: function(response) {
                   console.log('Email sent successfully!');
+                  var link = response['link'];
+                  alert(link);
                   $('#email-input').val('');
               },
               error: function(xhr, status, error) {

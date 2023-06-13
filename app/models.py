@@ -12,6 +12,7 @@ class pdf_file_model(models.Model):
     pdf_file = models.FileField(max_length=100, blank=False,upload_to=user_directory_path)
     
     
+    
     def __str__(self):
         return self.pdf_name
     
@@ -25,6 +26,8 @@ class UserInvitationRecord(models.Model):
 class comment(models.Model):
     comment = models.CharField(max_length=250,blank=False, default='None')
     pdf=models.ForeignKey(pdf_file_model, on_delete=models.CASCADE)
+    reply = models.TextField(null=True)
+
     
     def __str__(self):
         return self.comment

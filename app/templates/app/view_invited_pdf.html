@@ -12,8 +12,21 @@
         <h4> Added Comments by you:</h4>
           <ul id="comment-list" class="list-group list-group-flush">
             {% for comment in comments %}
-                <li class="list-group-item">{{ comment.comment }}</li>
-            {% endfor %}
+
+            <li class="list-group-item">
+
+            <div class="card border-info mb-3" style="max-width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">Comment-{{ comment.comment }}</h5>
+                {% if comment.reply %}
+                <p class="card-text">Reply-{{ comment.reply }}</p>
+                {% endif %}
+              </div>
+
+              </li>
+                {% endfor %}
+
+               
         </ul>
       </div>
 

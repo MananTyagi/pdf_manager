@@ -152,6 +152,10 @@ def password_reset_link(request, token):
             remove_user_obj_id_from_session(request)
             messages.success(request, "password has been changed successfully,please login now with your new password")
             return redirect("login")
+        else:
+            messages.error(request, "Two passwords are missed match,please type correctly")
+            return render(request=request, template_name="users/reset_password.html" , context={'form': form} )
+            
             
     else:
         try:

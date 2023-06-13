@@ -9,6 +9,7 @@ urlpatterns = [
     path("comment_adder", views.comment_adder, name="comment_adder"),
     path("search_pdf", views.search_pdf, name="search_pdf"),
     path("view_invited_pdf/<str:encoded>", views.view_invited_pdf, name="view_invited_pdf"),
-    path("pdf_file/<str:id>/", views.pdf_file_viewer, name="pdf_file")
+    path("pdf_file/<str:id>/", views.pdf_file_viewer, name="pdf_file"),
+    path("reply_adder/<str:id>/", views.reply_adder, name="reply_adder")
     
 ]
